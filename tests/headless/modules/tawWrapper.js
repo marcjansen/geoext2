@@ -12,10 +12,20 @@
  * @returns {String[]} The names of the referenced test files.
  */
 function getTestFiles() {
-    var links = document.querySelectorAll('li');
-    return Array.prototype.map.call(links, function(e) {
-        return e.innerHTML;
+    var testFileUrlVariants = [
+           'extjs=4.2.1',
+           'extjs=5.1.0'
+        ],
+        listItems = document.querySelectorAll('li'),
+        files = [];
+    Array.prototype.forEach.call(listItems, function(listItem) {
+        var file = listItem.innerHTML;
+        testFileUrlVariants.forEach(function(variant) {
+            var thisVariant = file + (variant ? "?" + variant : '');
+            files.push(thisVariant);
+        });
     });
+    return files;
 }
 
 /**
@@ -108,13 +118,14 @@ function runOneTestFunc(name, filename) {
             }
             return a === b;
         },
-        debugInfo = function(mockMethod, testName, filename, other) {
+        debugInfo = function(mockMethod, testName, filename, other, dump) {
             return [
                 " [",
                 mockMethod + ", ",
                 testName + "(t), ",
                 filename,
-                (other ? other : ''),
+                (other ? (', ' + other) : ''),
+                (dump ? (', dump: ' + JSON.stringify(dump)) : ''),
                 "]"
             ].join("");
         },
@@ -131,14 +142,14 @@ function runOneTestFunc(name, filename) {
                 }
             },
             eq: function(got, exp, msg) {
-                //if (got !== exp) {
                 if(!eqFunc(got, exp)) {
                     results.push({
                         pass: false,
                         msg: msg +
                             debugInfo(
                                 "t.eq", name, filename,
-                                "exp: " + exp + ", got: " + got
+                                "exp: " + exp + ", got: " + got,
+                                Array.prototype.slice.call(arguments)
                             )
                     });
                 } else {
