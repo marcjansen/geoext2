@@ -34,15 +34,61 @@ Ext.define('GeoExt.data.LayerModel',{
          * @static
          */
         createFromLayer: function(layer) {
-            return this.getProxy().reader.readRecords([layer]).records[0];
+            return this.getProxy().getReader().readRecords([layer]).records[0];
         }
     },
     fields: [
         'id',
-        {name: 'title', type: 'string', mapping: 'name'},
-        {name: 'legendURL', type: 'string', mapping: 'metadata.legendURL'},
-        {name: 'hideTitle', type: 'bool', mapping: 'metadata.hideTitle'},
-        {name: 'hideInLegend', type: 'bool', mapping: 'metadata.hideInLegend'}
+        {
+            name: 'title',
+            type: 'string',
+            // When using Ext.create to create records, the `mapping` of the
+            // fields is ignored, but the convert function is being used. See
+            // e.g. here: http://stackoverflow.com/q/20108609/860988
+            convert: function(v, rec){
+                var key = (GeoExt.isExt4) ? 'raw' : 'data';
+                return (rec && rec[key]) ? rec[key].name : undefined;
+            }
+        },
+        {
+            name: 'legendURL',
+            type: 'string',
+            // See the comment for the `title`-field for an explanation why we
+            // use a convert-function and not a `mapping`
+            convert: function(v, rec) {
+                var key = (GeoExt.isExt4) ? 'raw' : 'data';
+                if (rec && rec[key] && rec[key].metadata) {
+                    return rec[key].metadata.legendURL;
+                }
+                return undefined;
+            }
+        },
+        {
+            name: 'hideTitle',
+            type: 'bool',
+            // See the comment for the `title`-field for an explanation why we
+            // use a convert-function and not a `mapping`
+            convert: function(v, rec) {
+                var key = (GeoExt.isExt4) ? 'raw' : 'data';
+                if (rec && rec[key] && rec[key].metadata) {
+                    return rec[key].metadata.hideTitle;
+                }
+                return undefined;
+            }
+        },
+        {
+            name: 'hideInLegend',
+            type: 'bool',
+            // See the comment for the `title`-field for an explanation why we
+            // use a convert-function and not a `mapping`
+            convert: function(v, rec) {
+                var key = (GeoExt.isExt4) ? 'raw' : 'data';
+                if (rec && rec[key] && rec[key].metadata) {
+                    return rec[key].metadata.hideInLegend;
+                }
+                return undefined;
+            }
+        }
     ],
     proxy: {
         type: 'memory',
@@ -56,6 +102,6 @@ Ext.define('GeoExt.data.LayerModel',{
      * @return {OpenLayers.Layer}
      */
     getLayer: function() {
-        return this.raw;
+        return (GeoExt.isExt4) ? this.raw : this.data;
     }
 });

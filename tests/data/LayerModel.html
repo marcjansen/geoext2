@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--
+        Loads the resources of ExtJS and OpenLayers.
+
+        Use the URL-parameter `extjs` to require a specific
+        version of Ext, e.g. `Action.html?extjs=5.1.0`
+    -->
+    <script src="../../examples/include-ext.js"></script>
+    <script src="http://openlayers.org/api/2.13.1/OpenLayers.js"></script>
+
+    <script>
+        Ext.Loader.setConfig({
+            enabled:true,
+            disableCaching: false,
+            paths: {
+                "GeoExt": "../../src/GeoExt"
+            }
+        });
+
+        Ext.Loader.syncRequire([
+            'GeoExt.data.LayerModel'
+        ]);
+    </script>
+    <script>
+
+function test_constructor(t) {
+    t.plan(1);
+
+    // setup
+    var layer = new OpenLayers.Layer('Peter');
+    var instance = Ext.create('GeoExt.data.LayerModel', layer);
+
+    // 1 test
+    t.eq(instance.get('title'), 'Peter',
+            'Ext.create(): Layername is mapped to property title.');
+
+    // teardown
+    layer.destroy();
+    instance.destroy();
+}
+
+function test_createFromLayer(t) {
+    t.plan(1);
+
+    var layer = new OpenLayers.Layer('Herbert');
+    var instance = GeoExt.data.LayerModel.createFromLayer(layer);
+
+    // 1 test
+    t.eq(instance.get('title'), 'Herbert',
+            '#createFromLayer: Layername is mapped to property title.');
+
+    // teardown
+    layer.destroy();
+    instance.destroy();
+}
+
+function test_metadataMappingsExtCreate(t){
+    t.plan(3);
+
+    // setup
+    var layer = new OpenLayers.Layer('Jupp', {
+        metadata: {
+            legendURL: '/here/is/the/legend.png',
+            hideTitle: true,
+            hideInLegend: true,
+        }
+    });
+    var instance = Ext.create('GeoExt.data.LayerModel', layer);
+
+    // 3 tests
+    t.eq(instance.get('legendURL'), '/here/is/the/legend.png',
+            'Metadata under key "legendURL" is mapped to property.');
+    t.eq(instance.get('hideTitle'), true,
+            'Metadata under key "hideTitle" is mapped to property.');
+    t.eq(instance.get('hideInLegend'), true,
+            'Metadata under key "hideInLegend" is mapped to property.');
+
+    // teardown
+    layer.destroy();
+    instance.destroy();
+}
+
+function test_metadataMappingsStatic(t){
+    t.plan(3);
+
+    // setup
+    var layer = new OpenLayers.Layer('Jupp', {
+        metadata: {
+            legendURL: '/here/is/the/legend.png',
+            hideTitle: true,
+            hideInLegend: true,
+        }
+    });
+    var instance = GeoExt.data.LayerModel.createFromLayer(layer);
+
+    // 3 tests
+    t.eq(instance.get('legendURL'), '/here/is/the/legend.png',
+            'Metadata under key "legendURL" is mapped to property.');
+    t.eq(instance.get('hideTitle'), true,
+            'Metadata under key "hideTitle" is mapped to property.');
+    t.eq(instance.get('hideInLegend'), true,
+            'Metadata under key "hideInLegend" is mapped to property.');
+    
+    // teardown
+    layer.destroy();
+    instance.destroy();
+}
+
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
