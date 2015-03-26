@@ -21,7 +21,25 @@ Ext.define('GeoExt.data.WmcLayerModel',{
     requires: ['GeoExt.data.reader.Wmc'],
     alias: 'model.gx_wmc',
     fields: [
-        {name: "name", type: "string", mapping: "metadata.name"},
+        {
+            name: "name",
+            type: "string",
+            mapping: "metadata.name",
+            // See `GeoExt.data.LayerModel` for an explanation while we need a
+            // mapping and a convert function
+            convert: function(v, rec) {
+                var key = (GeoExt.isExt4) ? 'raw' : 'data',
+                    layer = rec[key],
+                    metadata = layer.metadata,
+                    converted;
+                if (metadata){
+                    converted = metadata.name;
+                } else if (v) {
+                    converted = v;
+                }
+                return converted;
+            }
+        },
         {name: "abstract", type: "string", mapping: "metadata.abstract"},
         {name: "metadataURL", type: "string", mapping: "metadata.metadataURL"},
         {name: "queryable", type: "boolean", mapping: "metadata.queryable"},

@@ -42,51 +42,77 @@ Ext.define('GeoExt.data.LayerModel',{
         {
             name: 'title',
             type: 'string',
+            mapping: 'name',
             // When using Ext.create to create records, the `mapping` of the
             // fields is ignored, but the convert function is being used. See
             // e.g. here: http://stackoverflow.com/q/20108609/860988
             convert: function(v, rec){
-                var key = (GeoExt.isExt4) ? 'raw' : 'data';
-                return (rec && rec[key]) ? rec[key].name : undefined;
+                var key = (GeoExt.isExt4) ? 'raw' : 'data',
+                    layer = rec && rec[key] || {},
+                    converted;
+                if (v){
+                    converted = v;
+                } else {
+                    converted = layer.name;
+                }
+                // write the converted value back to the layer, so that
+                // set('title', 'new title') is reflected in the layer as well
+                layer.name = converted;
+                return converted;
             }
         },
         {
             name: 'legendURL',
             type: 'string',
+            mapping: 'metadata.legendURL',
             // See the comment for the `title`-field for an explanation why we
             // use a convert-function and not a `mapping`
             convert: function(v, rec) {
-                var key = (GeoExt.isExt4) ? 'raw' : 'data';
-                if (rec && rec[key] && rec[key].metadata) {
-                    return rec[key].metadata.legendURL;
+                var key = (GeoExt.isExt4) ? 'raw' : 'data',
+                    converted;
+                if (v){
+                    converted = v;
+                } else if (rec && rec[key] && rec[key].metadata) {
+                    converted = rec[key].metadata.legendURL;
                 }
-                return undefined;
+                // TODO do we need to write back here as well?
+                return converted;
             }
         },
         {
             name: 'hideTitle',
             type: 'bool',
+            mapping: 'metadata.hideTitle',
             // See the comment for the `title`-field for an explanation why we
             // use a convert-function and not a `mapping`
             convert: function(v, rec) {
-                var key = (GeoExt.isExt4) ? 'raw' : 'data';
-                if (rec && rec[key] && rec[key].metadata) {
-                    return rec[key].metadata.hideTitle;
+                var key = (GeoExt.isExt4) ? 'raw' : 'data',
+                    converted;
+                if (v){
+                    converted = v;
+                } else if (rec && rec[key] && rec[key].metadata) {
+                    converted = rec[key].metadata.hideTitle;
                 }
-                return undefined;
+                // TODO do we need to write back here as well?
+                return converted;
             }
         },
         {
             name: 'hideInLegend',
             type: 'bool',
+            mapping: 'metadata.hideInLegend',
             // See the comment for the `title`-field for an explanation why we
             // use a convert-function and not a `mapping`
             convert: function(v, rec) {
-                var key = (GeoExt.isExt4) ? 'raw' : 'data';
-                if (rec && rec[key] && rec[key].metadata) {
-                    return rec[key].metadata.hideInLegend;
+                var key = (GeoExt.isExt4) ? 'raw' : 'data',
+                    converted;
+                if (v){
+                    converted = v;
+                } else if (rec && rec[key] && rec[key].metadata) {
+                    converted = rec[key].metadata.hideInLegend;
                 }
-                return undefined;
+                // TODO do we need to write back here as well?
+                return converted;
             }
         }
     ],
